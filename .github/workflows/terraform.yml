@@ -1,4 +1,43 @@
 
+name: Create S3 and EC2
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure AWS and Check S3 Bucket
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-west-1
+        run: |
+          if aws s3api head-bucket --bucket statefile23102026 2>/dev/null; then
+            echo "Bucket already exists. Reusing it."
+          else
+            echo "Bucket does not exist. Creating it."
+            aws s3api create-bucket \
+              --bucket statefile23102026 \
+              --region us-west-1 \
+              --create-bucket-configuration LocationConstraint=us-west-1
+          fi
+
       - name: Terraform Init
         working-directory: ec2
         env:
