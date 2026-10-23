@@ -6,7 +6,7 @@ terraform {
     region       = "us-west-1"
     use_lockfile = true
   }
-  
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -29,8 +29,7 @@ resource "aws_instance" "web" {
   user_data = <<-EOF
     #!/bin/bash
     dnf install httpd git -y
-    systemctl start httpd
-    systemctl enable httpd
+    systemctl enable --now httpd
     git clone https://github.com/Akshaya0707/services.git /var/www/html
   EOF
 
