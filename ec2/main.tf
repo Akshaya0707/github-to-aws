@@ -1,5 +1,12 @@
 
 terraform {
+  backend "s3" {
+    bucket       = "replace-with-your-unique-bucket-name"
+    key          = "github-ec2-demo/terraform.tfstate"
+    region       = "us-east-1"
+    use_lockfile = true
+  }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -79,14 +86,6 @@ resource "aws_instance" "web" {
   tags = {
     Name = "github-actions-ec2-demo"
   }
-}
-
-output "instance_id" {
-  value = aws_instance.web.id
-}
-
-output "public_ip" {
-  value = aws_instance.web.public_ip
 }
 
 output "website_url" {
