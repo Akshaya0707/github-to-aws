@@ -3,7 +3,7 @@ terraform {
   backend "s3" {
     bucket       = "statefile23102026"
     key          = "github-ec2-demo/terraform.tfstate"
-    region       = "us-east-1"
+    region       = "us-west-1"
     use_lockfile = true
   }
 
