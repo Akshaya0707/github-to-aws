@@ -19,35 +19,9 @@ provider "aws" {
   region = var.aws_region
 }
 
-data "aws_vpc" "default" {
-  default = true
-}
-
-data "aws_subnets" "default" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
-}
-
-data "aws_ami" "ubuntu" {
-  most_recent = true
-  owners      = ["099720109477"]
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
-}
-
 resource "aws_security_group" "web" {
   name   = "github-ec2-simple-web-sg"
-  vpc_id = data.aws_vpc.default.id
+  vpc_id = "vpc-098abbfe3ecad8113"
 
   ingress {
     from_port   = 80
@@ -69,18 +43,18 @@ resource "aws_security_group" "web" {
 }
 
 resource "aws_instance" "web" {
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = var.instance_type
-  subnet_id                   = tolist(data.aws_subnets.default.ids)[0]
-  vpc_security_group_ids      = [aws_security_group.web.id]
+  ami                         = "ami-0bbfe192d29e29bac"
+  instance_type               = "t3.micro"
+  subnet_id                   = "subnet-024791e8bf51b89aa"
+  vpc_security_group_ids      = ["sg-0f77442c920b8fcf0"]
   associate_public_ip_address = true
 
   user_data = <<-EOF
     #!/bin/bash
-    apt-get update
-    apt-get install -y nginx
-    systemctl enable --now nginx
-    echo '<h1>EC2 Created from GitHub Actions!</h1>' > /var/www/html/index.html
+    dnf install httpd git -y
+    systemctl start httpd
+    systemctl enable httpd
+    git clone https://github.com/Akshaya0707/services.git /var/www/html
   EOF
 
   tags = {
