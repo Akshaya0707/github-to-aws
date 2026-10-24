@@ -34,7 +34,7 @@ resource "aws_instance" "web" {
   EOF
 
   tags = {
-    Name = "github-actions-ec2-demo"
+    Name = "github-actions-ec2"
   }
 }
 
